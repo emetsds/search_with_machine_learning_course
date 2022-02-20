@@ -127,24 +127,28 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
         }
     else:
         query = {
+            "query_string": {
+                "fields": [
+                    "name^200",
+                    "name.stemmed^100",
+                    "shortDescription^100",
+                    "shortDescription.stemmed^50",
+                    "longDescription^20",
+                    "longDescription.stemmed^10",
+                    "department"
+                    ],
+                    "query": user_query
+                    }
+        }
+    query_obj = {
+        'size': 10,
+        "track_total_hits": True,
+        "sort": {sort: sortDir},
+        "query": {
             "function_score": {
                 "query": {
                     "bool": {
-                        "must": [
-                            {
-                                "query_string": {
-                                    "fields": [
-                                        "name^200",
-                                        "name.stemmed^100",
-                                        "shortDescription^100",
-                                        "shortDescription.stemmed^50",
-                                        "longDescription^20",
-                                        "longDescription.stemmed^10",
-                                        "department"],
-                                    "query": user_query
-                                }
-                            }
-                        ],
+                        "must": [query],
                         "should": [
                             {
                                 "match_phrase": {
@@ -185,12 +189,7 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
                     },
                 ]
             }
-        }
-    query_obj = {
-        'size': 10,
-        "track_total_hits": True,
-        "sort": {sort: sortDir},
-        "query": query,
+        },
         "aggs": {
             "missing_images": {
                 "missing": { 
