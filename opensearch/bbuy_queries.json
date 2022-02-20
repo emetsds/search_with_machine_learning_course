@@ -1,5 +1,43 @@
 {
   "settings": {
     "index.refresh_interval": "5s"
+  },
+  "mappings": {
+    "properties": {
+      "category": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          },
+          "stemmed": {
+            "type": "text",
+            "analyzer": "english"
+          }
+        }
+      },
+      "query": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          },
+          "stemmed": {
+            "type": "text",
+            "analyzer": "english"
+          }
+        }
+      },
+      "click_time" : {
+        "type":   "date",
+        "format": "yyyy-MM-dd HH:mm:ss.[SSS][SS][S][Z]",
+        "doc_values": true
+      },
+      "query_time" : {
+        "type":   "date",
+        "format": "yyyy-MM-dd HH:mm:ss.[SSS][SS][S][Z]",
+        "doc_values": true
+      }
+    }
   }
 }
