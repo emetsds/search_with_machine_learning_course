@@ -5,10 +5,10 @@ from flask import (
     Blueprint, redirect, render_template, request, url_for, current_app
 )
 
-from week2_finished.opensearch import get_opensearch
+from week4.opensearch import get_opensearch
 
-import week2_finished.utilities.query_utils as qu
-import week2_finished.utilities.ltr_utils as lu
+import week4.utilities.query_utils as qu
+import week4.utilities.ltr_utils as lu
 
 bp = Blueprint('search', __name__, url_prefix='/search')
 
@@ -55,6 +55,10 @@ def process_filters(filters_input):
     print("Filters: {}".format(filters))
 
     return filters, display_filters, applied_filters
+
+def get_query_category(user_query, query_class_model):
+    print("IMPLEMENT ME: get_query_category")
+    return None
 
 
 @bp.route('/query', methods=['GET', 'POST'])
@@ -131,6 +135,10 @@ def query():
     else:
         query_obj = qu.create_query("*", "", [], sort, sortDir, size=100)
 
+    query_class_model = current_app.config["query_model"]
+    query_category = get_query_category(user_query, query_class_model)
+    if query_category is not None:
+        print("IMPLEMENT ME: add this into the filters object so that it gets applied at search time.  This should look like your `term` filter from week 1 for department but for categories instead")
     #print("query obj: {}".format(query_obj))
     response = opensearch.search(body=query_obj, index=current_app.config["index_name"], explain=explain)
     # Postprocess results here if you so desire
@@ -139,7 +147,7 @@ def query():
     if error is None:
         return render_template("search_results.jinja2", query=user_query, search_response=response,
                                display_filters=display_filters, applied_filters=applied_filters,
-                               sort=sort, sortDir=sortDir, model=model, explain=explain)
+                               sort=sort, sortDir=sortDir, model=model, explain=explain, query_category=query_category)
     else:
         redirect(url_for("index"))
 
